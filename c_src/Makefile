@@ -17,7 +17,7 @@ else
 	OPTIMIZE = -O0 -g
 endif
 
-CC = clang
+CC = gcc
 
 GEN_CFLAGS = -finline-functions -mavx2 -DHAVE_RDRAND -fPIC \
 						 -std=gnu99 -Wall -Wextra -Wno-missing-field-initializers
