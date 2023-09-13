@@ -19,13 +19,24 @@ endif
 
 CC = gcc
 
-GEN_CFLAGS = -finline-functions -mavx2 -DHAVE_RDRAND -fPIC \
+GEN_CFLAGS = -finline-functions -mavx2 -fPIC \
 						 -std=gnu99 -Wall -Wextra -Wno-missing-field-initializers
 
 UNAME_SYS := $(shell uname -s)
 ifeq ($(UNAME_SYS), Darwin)
-	CFLAGS ?= -arch x86_64 -pie
-	LDFLAGS ?= -arch x86_64 -flat_namespace -undefined suppress
+	CFLAGS ?= -pie
+	LDFLAGS ?= -flat_namespace -undefined suppress
+endif
+
+HAS_RDRAND := $(shell \
+	if $(CC) -O -o $(BASEDIR)/../test_for_rdrand ./test_for_rdrand.c 2>/dev/null; then \
+		$(BASEDIR)/../test_for_rdrand && echo 1; \
+	else \
+		echo 0; \
+	fi; \
+)
+ifeq ($(HAS_RDRAND), 1)
+	GEN_CFLAGS += -DHAVE_RDRAND
 endif
 
 CFLAGS     += $(SIMDJSON_FLAGS) $(OPTIMIZE) -fPIC $(ERL_CXXFLAGS) $(GEN_CFLAGS)
